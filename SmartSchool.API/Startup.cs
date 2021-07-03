@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 
 namespace SmartSchool.API
 {
@@ -30,13 +31,16 @@ namespace SmartSchool.API
                 context => context.UseSqlite(Configuration.GetConnectionString("Default")) 
             );
 
-            // services.AddSingleton<Irepository, Repository>();
-            // services.AddTransient<Irepository, Repository>();
-            services.AddScoped<IRepository, Repository>();
-
             services.AddControllers().AddNewtonsoftJson(
                 opt => opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
             );
+
+
+            // Seta os mapeamentos das DTOS para a solution.
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            // services.AddSingleton<Irepository, Repository>();
+            // services.AddTransient<Irepository, Repository>();
+            services.AddScoped<IRepository, Repository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
