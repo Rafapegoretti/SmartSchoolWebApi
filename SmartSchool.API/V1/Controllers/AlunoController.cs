@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SmartSchool.API.Helpers;
 
 namespace SmartSchool.API.V1.Controllers
 {
@@ -37,10 +38,15 @@ namespace SmartSchool.API.V1.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get([FromQuery]PageParameters pageParams)
         {
-            var alunos = _repo.GetAllAlunos(true);
-            return Ok(_mapper.Map<IEnumerable<AlunoDto>>(alunos));
+            var alunos = await _repo.GetAllAlunosAsync(pageParams,true);
+
+            var alunosResult = _mapper.Map<IEnumerable<AlunoDto>>(alunos);
+
+            Response.AddPagination(alunos.CurrentPage, alunos.CurrentPage, alunos.TotalCount, alunos.TotalPage);
+
+            return Ok(alunosResult);
         }
 
         //http://localhost:5000/api/aluno/byId?id=2

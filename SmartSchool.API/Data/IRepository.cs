@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using SmartSchool.API.Helpers;
 using SmartSchool.API.Models;
 
 namespace SmartSchool.API.Data
@@ -9,6 +12,8 @@ namespace SmartSchool.API.Data
         void Delete<T>(T entity) where T : class;
         bool SaveChanges();
 
+
+        Task<PageList<Aluno>> GetAllAlunosAsync(PageParameters pageParams, bool includeProfessor = false);
         Aluno[] GetAllAlunos(bool includeProfessor);
         Aluno[] GetAllAlunosByDIsciplinaId(int disciplinaId, bool includeProfessor);
         Aluno GetAlunoById(int alunoId, bool includeProfessor);
