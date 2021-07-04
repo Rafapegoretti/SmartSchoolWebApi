@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SmartSchool.API</name>
+    </assembly>
+    <members>
+        <member name="M:SmartSchool.API.V1.Controllers.AlunoController.GetRegister">
+            <summary>
+            Retona um exemplo de AlunoDto
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

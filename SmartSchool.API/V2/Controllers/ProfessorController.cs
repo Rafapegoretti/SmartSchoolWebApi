@@ -3,16 +3,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SmartSchool.API.Data;
-using SmartSchool.API.Dtos;
+using SmartSchool.API.V2.Dtos;
 using SmartSchool.API.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SmartSchool.API.Controllers
+namespace SmartSchool.API.V2.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiVersion("2.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class ProfessorController : ControllerBase
     {
@@ -24,15 +25,6 @@ namespace SmartSchool.API.Controllers
             _mapper = mapper;
             _repo = repo;
         }
-
-
-
-        [HttpGet("getRegister")]
-        public IActionResult GetRegister()
-        {
-            return Ok(new ProfessorRegistrarDto());
-        }
-
         
         [HttpGet]
         public IActionResult Get()

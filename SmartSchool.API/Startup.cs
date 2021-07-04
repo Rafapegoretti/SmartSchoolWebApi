@@ -12,6 +12,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using System.Reflection;
+using System.IO;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 namespace SmartSchool.API
 {
@@ -41,10 +44,51 @@ namespace SmartSchool.API
             // services.AddSingleton<Irepository, Repository>();
             // services.AddTransient<Irepository, Repository>();
             services.AddScoped<IRepository, Repository>();
+
+            services.AddVersionedApiExplorer( opt => {
+                opt.GroupNameFormat = "'v'VVV";
+                opt.SubstituteApiVersionInUrl = true;
+            })
+            .AddApiVersioning(opt => {
+                opt.DefaultApiVersion = new ApiVersion(1, 0);
+                opt.AssumeDefaultVersionWhenUnspecified = true;
+                opt.ReportApiVersions = true;
+            });
+
+            var apiProviderDescription = services.BuildServiceProvider().GetService<IApiVersionDescriptionProvider>();
+
+            services.AddSwaggerGen(
+                opt =>{
+
+                    foreach(var description in apiProviderDescription.ApiVersionDescriptions){
+                        opt.SwaggerDoc(description.GroupName, new Microsoft.OpenApi.Models.OpenApiInfo()
+                        {
+                            Title = "SmartSchoo API",
+                            Version = description.ApiVersion.ToString(),
+                            TermsOfService = new Uri("https://TermosDeUso.com"),
+                            Description = "DEscrição da API",
+                            License = new Microsoft.OpenApi.Models.OpenApiLicense
+                            {
+                                Name = "SmartSchool Liscence",
+                                Url = new Uri("http://mit.com")
+                            },
+                            Contact = new Microsoft.OpenApi.Models.OpenApiContact
+                            {
+                                Name = "Rafael Pegoretti",
+                                Email = ""
+                            }
+                        });
+                    }
+
+                    var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                    var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
+
+                    opt.IncludeXmlComments(xmlCommentsFullPath);
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider apiVersionDescriptionProvider)
         {
             if (env.IsDevelopment())
             {
@@ -52,6 +96,17 @@ namespace SmartSchool.API
             }
 
             app.UseRouting();
+
+            app.UseSwagger()
+               .UseSwaggerUI(
+                   opt =>{
+                       foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+                       {
+                           opt.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+                       }
+                       opt.RoutePrefix = "";
+                   }
+               );
 
             app.UseAuthorization();
 
